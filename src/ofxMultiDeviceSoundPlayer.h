@@ -42,7 +42,6 @@ class ofxMultiDeviceSoundPlayer
 		
 		static void closeFmod(); 
 		
-		
 		void 	unloadSound(); 
 		void  	play(); 
 		void  	stop(); 
@@ -74,7 +73,13 @@ class ofxMultiDeviceSoundPlayer
 		FMOD_RESULT			result;
 		FMOD_CHANNEL 		*  channel;
 		FMOD_SOUND  		*  sound;
-		int device;
+		
+		
+		string	deviceName;
+		int		device;
+
+	protected:
+
 		
 };
 

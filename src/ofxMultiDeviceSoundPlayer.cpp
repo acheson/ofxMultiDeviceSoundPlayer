@@ -5,6 +5,7 @@
  *  Created by Zach Gage on 7/29/08.
  *  Copyright 2008 STFJ.NET. All rights reserved.
  *
+ *  Modified by Rob Acheson to support selecting device by name
  */
 
 #include "ofxMultiDeviceSoundPlayer.h"
@@ -14,9 +15,11 @@ float MultiFftInterpValues[8192];			//
 float MultiFftSpectrum[8192];		// maximum # is 8192, in fmodex....*/
 
 
-static FMOD_CHANNELGROUP * channel_Array[100];
-static FMOD_SYSTEM * sys_Array[100];
-static bool sys_Array_init[100];
+#define NUM_CHANNELS 32
+
+static FMOD_CHANNELGROUP * channel_Array[NUM_CHANNELS];
+static FMOD_SYSTEM * sys_Array[NUM_CHANNELS];
+static bool sys_Array_init[NUM_CHANNELS];
 
 //-------------------------------------
 
@@ -47,7 +50,7 @@ void ofxMultiDeviceSoundPlayer::unloadSound(){
 
 //---------------------------------------
 void ofxMultiDeviceSoundPlayer::closeFmod(){
-	for(int i=0;i<100;i++)
+	for(int i=0;i<NUM_CHANNELS;i++)
 	{
 		if(sys_Array_init[i]){
 			FMOD_System_Close(sys_Array[i]);
@@ -56,32 +59,39 @@ void ofxMultiDeviceSoundPlayer::closeFmod(){
 	}
 }
 
+//void ofxMultiDeviceSoundPlayer::getDeviceName(int deviceIndex) {
+//	char name[256];
+//	FMOD_GUID guid;
+//	FMOD_System_GetDriverInfo(sys_Array[deviceIndex], deviceIndex, name, 256, &guid);
+//	printf("%d : %s\n", deviceIndex, name);
+//	deviceName = name;
+//	return name;
+//}
+
 // this should only be called once per device
 void ofxMultiDeviceSoundPlayer::initializeFmodWithTargetDevice(int deviceIndex)
 {
+
 	if(!sys_Array_init[deviceIndex]){
 		FMOD_System_Create(&sys_Array[deviceIndex]);
 		
 		int driverNum;
 		FMOD_System_GetNumDrivers(sys_Array[deviceIndex], &driverNum);
 		
-		/*
-		for(int i=0; i<driverNum; i++)
-		{
-			char name[256];
-			FMOD_System_GetDriverName(sys_Array[deviceIndex], i, name, 256);
-			
-			printf("%d : %s\n", i, name);
-		}*/
+		char name[256];
+		FMOD_GUID guid;
+		FMOD_System_GetDriverInfo(sys_Array[deviceIndex], deviceIndex, name, 256, &guid);
+		//printf("%d : %s\n", deviceIndex, name);
 		
 		FMOD_System_SetDriver(sys_Array[deviceIndex], deviceIndex);
-		FMOD_System_Init(sys_Array[deviceIndex], 2000, FMOD_INIT_NORMAL, NULL);  //do we want just 32 channels?
+		FMOD_System_Init(sys_Array[deviceIndex], NUM_CHANNELS, FMOD_INIT_NORMAL, NULL); 
 		
 		FMOD_System_GetMasterChannelGroup(sys_Array[deviceIndex], &channel_Array[deviceIndex]);
 		
 		sys_Array_init[deviceIndex] = true;
 	}
 }
+
 
 //------------------------------------------------------------
 void ofxMultiDeviceSoundPlayer::loadSoundWithTarget(string fileName, int deviceIndex)
@@ -102,6 +112,14 @@ void ofxMultiDeviceSoundPlayer::loadSoundWithTarget(string fileName, int deviceI
 	// [1] init fmod, if necessary
 	
 	initializeFmodWithTargetDevice(deviceIndex);	
+	
+	// Set the device name
+	char name[256];
+	FMOD_GUID guid;
+	FMOD_System_GetDriverInfo(sys_Array[deviceIndex], deviceIndex, name, 256, &guid);
+	//printf("%d : %s\n", deviceIndex, name);
+	deviceName = name;
+
 	
 	// [2] try to unload any previously loaded sounds
 	// & prevent user-created memory leaks
