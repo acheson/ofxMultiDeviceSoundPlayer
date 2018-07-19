@@ -59,14 +59,14 @@ void ofxMultiDeviceSoundPlayer::closeFmod(){
 	}
 }
 
-//void ofxMultiDeviceSoundPlayer::getDeviceName(int deviceIndex) {
-//	char name[256];
-//	FMOD_GUID guid;
-//	FMOD_System_GetDriverInfo(sys_Array[deviceIndex], deviceIndex, name, 256, &guid);
-//	printf("%d : %s\n", deviceIndex, name);
-//	deviceName = name;
-//	return name;
-//}
+string ofxMultiDeviceSoundPlayer::getDeviceName(int deviceIndex) {
+	char name[256];
+	FMOD_GUID guid;
+	FMOD_System_GetDriverInfo(sys_Array[deviceIndex], deviceIndex, name, 256, &guid);
+	printf("%d : %s\n", deviceIndex, name);
+	deviceName = name;
+	return name;
+}
 
 // this should only be called once per device
 void ofxMultiDeviceSoundPlayer::initializeFmodWithTargetDevice(int deviceIndex)
@@ -137,7 +137,7 @@ void ofxMultiDeviceSoundPlayer::loadSoundWithTarget(string fileName, int deviceI
 
 	if (result != FMOD_OK){
 		bLoadedOk = false;
-		printf("ofSoundPlayer: Could not load sound file %s \n", fileName.c_str() );
+		printf("ofSoundPlayer: Could not load sound file %s at index %i \n", fileName.c_str(), deviceIndex );
 	} else {
 		bLoadedOk = true;
 		FMOD_Sound_GetLength(sound, &length, FMOD_TIMEUNIT_PCM);
@@ -183,6 +183,11 @@ void ofxMultiDeviceSoundPlayer::setPosition(float pct){
 }
 
 //------------------------------------------------------------
+float ofxMultiDeviceSoundPlayer::getLength() {
+	return (float)length * 1000.f / internalFreq;
+}
+
+//------------------------------------------------------------
 float ofxMultiDeviceSoundPlayer::getPosition(){
 	if (getIsPlaying() == true){
 		unsigned int sampleImAt;
@@ -197,6 +202,12 @@ float ofxMultiDeviceSoundPlayer::getPosition(){
 	} else {
 		return 0;
 	}
+}
+
+//------------------------------------------------------------
+float ofxMultiDeviceSoundPlayer::getPositionMS() {
+	float position = getPosition() * getLength();
+	return position;
 }
 
 //------------------------------------------------------------

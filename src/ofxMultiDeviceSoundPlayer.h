@@ -54,11 +54,15 @@ class ofxMultiDeviceSoundPlayer
 		void 	setMultiPlay(bool bMp);
 		void 	setPosition(float pct);	// 0 = start, 1 = end;
 		
+		float	getLength(); // ms
 		float  	getPosition();
+		float  	getPositionMS();
 		bool 	getIsPlaying(); 	
 		float 	getSpeed();	
 		float 	getPan();
 		
+		string getDeviceName(int deviceIndex);
+
 		bool	isStreaming;
 		bool 	bMultiPlay;
 		bool 	bLoop;
