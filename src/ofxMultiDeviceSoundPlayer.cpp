@@ -33,11 +33,17 @@ ofxMultiDeviceSoundPlayer::ofxMultiDeviceSoundPlayer(){
 	bPaused 		= false;
 	isStreaming		= false;	
 	device			= 0;
+	bFadingIn		= false;
+	bFadingOut		= false;
+	fadeDuration	= 1000; // ms
 }
 
 ofxMultiDeviceSoundPlayer::~ofxMultiDeviceSoundPlayer(){
 	unloadSound();
 }
+
+
+
 
 //--------------------------------------
 
@@ -284,4 +290,48 @@ void ofxMultiDeviceSoundPlayer::play(){
 // ---------------------------------------------------------------------------- 
 void ofxMultiDeviceSoundPlayer::stop(){
 	FMOD_Channel_Stop(channel);
+	bFadingIn = false;
+	bFadingOut = false;
+}
+
+
+// ---------------------------------------------------------------------------- 
+void ofxMultiDeviceSoundPlayer::update() {
+
+	if (bFadingIn) {
+		float elapsed = ofGetElapsedTimeMillis() - fadeStartTime;
+		setVolume(elapsed / fadeDuration); 
+
+		if (volume >= 1) {
+			bFadingIn = false;
+		}
+	}
+
+	if (bFadingOut) {
+		float elapsed = ofGetElapsedTimeMillis() - fadeStartTime;
+		if (elapsed > fadeDuration) elapsed = fadeDuration;
+		setVolume(1.f - (elapsed / fadeDuration) ); 
+
+		if (volume <= 0) {
+			bFadingOut = false;
+			stop();
+		}
+	}
+}
+
+// ---------------------------------------------------------------------------- 
+void ofxMultiDeviceSoundPlayer::fadeIn() {
+	volume = 0;
+	play();
+	bFadingIn = true;
+	bFadingOut = false;
+	fadeStartTime = ofGetElapsedTimeMillis();
+}
+
+
+// ---------------------------------------------------------------------------- 
+void ofxMultiDeviceSoundPlayer::fadeOut() {
+	bFadingOut = true;
+	bFadingIn = false;
+	fadeStartTime = ofGetElapsedTimeMillis();
 }

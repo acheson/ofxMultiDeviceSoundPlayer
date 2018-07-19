@@ -42,6 +42,8 @@ class ofxMultiDeviceSoundPlayer
 		
 		static void closeFmod(); 
 		
+		void update();
+
 		void 	unloadSound(); 
 		void  	play(); 
 		void  	stop(); 
@@ -62,6 +64,9 @@ class ofxMultiDeviceSoundPlayer
 		float 	getPan();
 		
 		string getDeviceName(int deviceIndex);
+		void fadeIn();
+		void fadeOut();
+
 
 		bool	isStreaming;
 		bool 	bMultiPlay;
@@ -84,6 +89,13 @@ class ofxMultiDeviceSoundPlayer
 
 	protected:
 
+private:
+
+	bool bFadingIn;
+	bool bFadingOut;
+
+	float fadeDuration;
+	float fadeStartTime;
 		
 };
 
