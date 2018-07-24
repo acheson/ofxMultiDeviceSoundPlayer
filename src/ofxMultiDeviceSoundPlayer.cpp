@@ -35,7 +35,7 @@ ofxMultiDeviceSoundPlayer::ofxMultiDeviceSoundPlayer(){
 	device			= 0;
 	bFadingIn		= false;
 	bFadingOut		= false;
-	fadeDuration	= 1000; // ms
+	fadeDuration	= 500; // ms
 }
 
 ofxMultiDeviceSoundPlayer::~ofxMultiDeviceSoundPlayer(){
@@ -321,6 +321,8 @@ void ofxMultiDeviceSoundPlayer::update() {
 
 // ---------------------------------------------------------------------------- 
 void ofxMultiDeviceSoundPlayer::fadeIn() {
+	if (volume == 1) return;
+
 	volume = 0;
 	play();
 	bFadingIn = true;
@@ -331,6 +333,8 @@ void ofxMultiDeviceSoundPlayer::fadeIn() {
 
 // ---------------------------------------------------------------------------- 
 void ofxMultiDeviceSoundPlayer::fadeOut() {
+	if (getIsPlaying() == false || volume == 0) return;
+
 	bFadingOut = true;
 	bFadingIn = false;
 	fadeStartTime = ofGetElapsedTimeMillis();
