@@ -69,7 +69,7 @@ string ofxMultiDeviceSoundPlayer::getDeviceName(int deviceIndex) {
 	char name[256];
 	FMOD_GUID guid;
 	FMOD_System_GetDriverInfo(sys_Array[deviceIndex], deviceIndex, name, 256, &guid);
-	printf("%d : %s\n", deviceIndex, name);
+	//printf("%d : %s\n", deviceIndex, name);
 	deviceName = name;
 	return name;
 }
@@ -87,7 +87,8 @@ void ofxMultiDeviceSoundPlayer::initializeFmodWithTargetDevice(int deviceIndex)
 		char name[256];
 		FMOD_GUID guid;
 		FMOD_System_GetDriverInfo(sys_Array[deviceIndex], deviceIndex, name, 256, &guid);
-		//printf("%d : %s\n", deviceIndex, name);
+		
+		printf("Initializing FMOD : %d : %s\n", deviceIndex, name);
 		
 		FMOD_System_SetDriver(sys_Array[deviceIndex], deviceIndex);
 		FMOD_System_Init(sys_Array[deviceIndex], NUM_CHANNELS, FMOD_INIT_NORMAL, NULL); 
